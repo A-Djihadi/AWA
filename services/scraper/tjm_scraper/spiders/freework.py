@@ -1,13 +1,28 @@
 """
-Spider FreeWork pour AWA - Optimisé pour extraction TJM
+AWA TJM Scraper - FreeWork Spider
+
+Extracts freelance job data from FreeWork platform with focus on TJM rates.
+Optimized for robust technology extraction and data quality.
 """
 import scrapy
 import re
 import json
 from datetime import datetime
 from urllib.parse import urljoin
+from tjm_scraper.items import TjmOfferItem
+
 
 class FreeWorkSpider(scrapy.Spider):
+    """
+    FreeWork spider for TJM extraction
+    
+    Features:
+    - Robust technology extraction from JSON-LD and text
+    - TJM rate parsing with multiple formats
+    - Comprehensive job data extraction
+    - Proper error handling and logging
+    """
+    
     name = 'freework'
     allowed_domains = ['free-work.com']
     start_urls = [
@@ -18,33 +33,49 @@ class FreeWorkSpider(scrapy.Spider):
         'DOWNLOAD_DELAY': 2,
         'RANDOMIZE_DOWNLOAD_DELAY': True,
         'COOKIES_ENABLED': True,
-        'USER_AGENT': 'AWA-FreeWork-Scraper/1.0'
+        'USER_AGENT': 'AWA-TJM-Scraper/1.0',
+        'ROBOTSTXT_OBEY': True,
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': 1,
+        'AUTOTHROTTLE_MAX_DELAY': 10,
+        'AUTOTHROTTLE_TARGET_CONCURRENCY': 2.0,
     }
     
     def parse(self, response):
-        """Parser la page de listing des missions"""
+        """
+        Parse job listing page and extract mission links
         
-        self.logger.info(f"Parsing FreeWork listing: {response.url}")
+        Args:
+            response: Scrapy response object
+            
+        Yields:
+            Request: Mission detail page requests
+        """
+        self.logger.info(f"Parsing listing page: {response.url}")
         
-        # Sélecteurs pour les liens de missions basés sur l'analyse
+        # Extract mission links with robust selectors
         mission_links = response.css('a[href*="/job-mission/"]::attr(href)').getall()
         
         if not mission_links:
-            # Fallback: chercher tous les liens internes avec job ou mission
+            # Fallback: search for job-related links
             all_links = response.css('a[href*="/fr/tech-it/"]::attr(href)').getall()
             mission_links = [link for link in all_links if 'job-mission' in link]
         
         self.logger.info(f"Found {len(mission_links)} mission links")
         
-        # Suivre les liens de missions
+        # Follow mission links
         for link in mission_links:
             absolute_url = urljoin(response.url, link)
-            yield response.follow(absolute_url, self.parse_mission, meta={'listing_url': response.url})
+            yield response.follow(
+                absolute_url, 
+                self.parse_mission, 
+                meta={'listing_url': response.url}
+            )
         
-        # Pagination
+        # Handle pagination
         next_page = response.css('a[href*="page="]::attr(href)').get()
         if next_page:
-            self.logger.info(f"Next page found: {next_page}")
+            self.logger.info(f"Following next page: {next_page}")
             yield response.follow(next_page, self.parse)
     
     def parse_mission(self, response):
