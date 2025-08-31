@@ -1,40 +1,53 @@
-# AWA - Another Weather Application
+# AWA - TJM Analytics Platform
 
 Un tracker de taux journaliers moyens (TJM) pour développeurs freelance avec architecture cloud moderne.
 
 ## 🏗️ Architecture
 
-### Supabase + VPS Docker
+### Frontend: Next.js sur Vercel
+- **Deployment**: Vercel (optimisé)
+- **Database**: Supabase Postgres
+- **Storage**: Supabase Storage
+- **Analytics**: Dashboard en temps réel
 
-- **Frontend**: Next.js (Vercel/VPS) avec Supabase client
-- **Backend**: Microservices Docker sur VPS
+### Backend: Services Docker
+- **Scraping**: Scrapy containers avec cron
+- **ETL**: Python/Pandas pour normalisation
 - **Database**: Supabase Postgres managé
-- **Storage**: Supabase Storage pour archives
-- **Scraping**: Scrapy/Playwright containers avec cron hebdomadaire
 
 ## 🚀 Quick Start
 
+### Frontend (Vercel)
+```bash
+# Deploy to Vercel
+./deploy-vercel.sh
+
+# Local development
+cd services/frontend
+npm install
+npm run dev
+```
+
+### Backend Services
 ```bash
 # Clone & setup
 git clone <repo>
 cd awa
 
 # Setup environment
-cp services/frontend/.env.example services/frontend/.env.local
 cp services/scraper/.env.example services/scraper/.env
 cp services/etl/.env.example services/etl/.env
 
-# Development
+# Run services
 docker-compose up -d
-cd services/frontend && npm run dev
 ```
 
 ## 📊 Flux de données
 
 ```
-[Sites TJM] → [Scrapers] → [ETL] → [Supabase] → [Next.js Dashboard]
+[Sites TJM] → [Scrapers] → [ETL] → [Supabase] → [Vercel Dashboard]
      ↓           ↓          ↓         ↓            ↓
-  HTTP req   Raw JSON   Normalized  Postgres    UI/Graphs
+  HTTP req   Raw JSON   Normalized  Postgres    Real-time UI
 ```
 
 ## 🏃‍♂️ Services

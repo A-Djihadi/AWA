@@ -373,6 +373,4 @@ docker-compose up -d
 
 ---
 
-**Contact**: admin@votre-domaine.com  
-**Documentation**: https://docs.votre-domaine.com  
-**Monitoring**: https://monitoring.votre-domaine.com
+**Contact**: djihadi.ahamdy@gmail.com 
