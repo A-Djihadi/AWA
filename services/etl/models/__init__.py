@@ -161,28 +161,35 @@ class JobOffer:
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for database storage"""
+        # Combine location fields into single location string
+        location_parts = []
+        if self.location:
+            if self.location.city:
+                location_parts.append(self.location.city)
+            if self.location.region:
+                location_parts.append(self.location.region)
+            if self.location.country:
+                location_parts.append(self.location.country)
+        
+        location_str = ", ".join(location_parts) if location_parts else None
+        
         return {
             'source': self.source,
             'source_id': self.source_id,
             'url': self.url,
             'title': self.title,
             'description': self.description,
-            'company_name': self.company.name if self.company else None,
-            'company_industry': self.company.industry if self.company else None,
-            'company_size': self.company.size if self.company else None,
-            'tjm_min': self.tjm.min_rate if self.tjm else None,
-            'tjm_max': self.tjm.max_rate if self.tjm else None,
+            'company': self.company.name if self.company else None,
+            'tjm_min': int(self.tjm.min_rate) if self.tjm and self.tjm.min_rate else None,
+            'tjm_max': int(self.tjm.max_rate) if self.tjm and self.tjm.max_rate else None,
             'tjm_currency': self.tjm.currency if self.tjm else 'EUR',
             'technologies': self.technologies,
             'seniority_level': self.seniority_level.value if self.seniority_level else None,
-            'location_city': self.location.city if self.location else None,
-            'location_region': self.location.region if self.location else None,
-            'location_country': self.location.country if self.location else None,
+            'location': location_str,
             'remote_policy': self.remote_policy.value if self.remote_policy else None,
             'contract_type': self.contract_type.value,
             'scraped_at': self.scraped_at.isoformat() if self.scraped_at else None,
-            'processed_at': self.processed_at.isoformat() if self.processed_at else None,
-            'quality_score': self.quality_metrics.overall_score if self.quality_metrics else None,
+            'normalized_at': self.processed_at.isoformat() if self.processed_at else None,
         }
 
 

@@ -4,7 +4,7 @@ services:
   # Scraper Service - Scrapy/Playwright pour extraction
   scraper:
     build: 
-      context: ./services/scraper
+      context: ../services/scraper
       dockerfile: Dockerfile
     container_name: awa-scraper
     environment:
@@ -13,8 +13,10 @@ services:
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - PYTHONPATH=/app
     volumes:
-      - ./data/raw:/app/data/raw
-      - ./logs:/app/logs
+      - ../data/raw:/app/data/raw
+      - ../logs:/app/logs
+    ports:
+      - "8000:8000"
     networks:
       - awa-network
     restart: unless-stopped
@@ -27,7 +29,7 @@ services:
   # ETL Service - Normalisation et insertion
   etl:
     build:
-      context: ./services/etl
+      context: ../services/etl
       dockerfile: Dockerfile
     container_name: awa-etl
     environment:
@@ -35,9 +37,11 @@ services:
       - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
       - PYTHONPATH=/app
     volumes:
-      - ./data/raw:/app/data/raw
-      - ./data/processed:/app/data/processed
-      - ./logs:/app/logs
+      - ../data/raw:/app/data/raw
+      - ../data/processed:/app/data/processed
+      - ../logs:/app/logs
+    ports:
+      - "8001:8001"
     depends_on:
       - scraper
     networks:
@@ -47,14 +51,14 @@ services:
   # Scheduler Service - Cron jobs
   scheduler:
     build:
-      context: ./services/scheduler
+      context: ../services/scheduler
       dockerfile: Dockerfile
     container_name: awa-scheduler
     environment:
       - SCRAPER_SERVICE_URL=http://scraper:8000
       - ETL_SERVICE_URL=http://etl:8001
     volumes:
-      - ./logs:/app/logs
+      - ../logs:/app/logs
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       - scraper
@@ -85,7 +89,7 @@ services:
   # Frontend (optionnel, si hébergé sur VPS)
   frontend:
     build:
-      context: ./services/frontend
+      context: ../services/frontend
       dockerfile: Dockerfile
     container_name: awa-frontend
     environment:

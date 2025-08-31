@@ -75,4 +75,4 @@ RUN chmod +x /entrypoint.sh
 USER scraper
 
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["python", "-m", "scrapy", "list"]
+CMD ["python", "api.py"]

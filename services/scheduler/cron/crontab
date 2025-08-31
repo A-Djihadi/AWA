@@ -1,0 +1,14 @@
+# AWA Scheduler Crontab
+# Extraction hebdomadaire le dimanche à 2h
+0 2 * * 0 /app/scripts/run_scraper.sh freework >> /var/log/cron.log 2>&1
+0 3 * * 0 /app/scripts/run_scraper.sh malt >> /var/log/cron.log 2>&1  
+0 4 * * 0 /app/scripts/run_scraper.sh comet >> /var/log/cron.log 2>&1
+
+# ETL quotidien à 6h
+0 6 * * * /app/scripts/run_etl.sh >> /var/log/cron.log 2>&1
+
+# Nettoyage mensuel le 1er à 1h
+0 1 1 * * /app/scripts/cleanup_old_data.sh >> /var/log/cron.log 2>&1
+
+# Health check toutes les heures
+0 * * * * /app/scripts/health_check.sh >> /var/log/cron.log 2>&1

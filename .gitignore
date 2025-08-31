@@ -13,11 +13,20 @@ venv/
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Environment variables
+# Environment variables and secrets
 .env
 .env.local
 .env.development.local
 .env.test.local
+.env.production.local
+.env.*.local
+.env.shared
+
+# Keep templates and examples
+!.env.example
+!.env.*.example
+!.env.template
+!.env.*.template
 .env.production.local
 
 # IDE files

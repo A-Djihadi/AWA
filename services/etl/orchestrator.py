@@ -45,7 +45,7 @@ class ETLOrchestrator:
         
         try:
             # Health checks
-            if not self._run_health_checks():
+            if not self._run_health_checks(source_dir):
                 return {
                     "success": False,
                     "error": "Health checks failed",
@@ -142,7 +142,7 @@ class ETLOrchestrator:
                 "batch_id": self.current_batch.batch_id if self.current_batch else None
             }
     
-    def _run_health_checks(self) -> bool:
+    def _run_health_checks(self, source_directory: str) -> bool:
         """Run health checks on all components"""
         
         self.logger.info("Running health checks...")
@@ -153,9 +153,9 @@ class ETLOrchestrator:
             return False
         
         # Check source directory
-        source_path = Path(CONFIG.data_source_dir)
+        source_path = Path(source_directory)
         if not source_path.exists():
-            self.logger.error(f"Source directory does not exist: {CONFIG.data_source_dir}")
+            self.logger.error(f"Source directory does not exist: {source_directory}")
             return False
         
         self.logger.info("All health checks passed")

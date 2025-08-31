@@ -39,7 +39,7 @@ class SupabaseLoader(BaseLoader):
     def __init__(self):
         super().__init__("supabase")
         self.client: Optional[Client] = None
-        self.table_name = "job_offers"
+        self.table_name = "offers"
         self._initialize_client()
     
     def _initialize_client(self):
@@ -139,27 +139,40 @@ class SupabaseLoader(BaseLoader):
             if not records:
                 return {"loaded_count": 0, "failed_count": len(offers), "errors": ["No valid records in batch"]}
             
-            # Upsert to database
-            result = self.client.table(self.table_name).upsert(
-                records,
-                on_conflict="source,source_id"
-            ).execute()
+            # Process records one by one to handle conflicts properly
+            loaded_count = 0
+            failed_count = 0
+            errors = []
             
-            if result.data:
-                loaded_count = len(result.data)
-                failed_count = len(offers) - loaded_count
-                
-                return {
-                    "loaded_count": loaded_count,
-                    "failed_count": failed_count,
-                    "errors": []
-                }
-            else:
-                return {
-                    "loaded_count": 0,
-                    "failed_count": len(offers),
-                    "errors": ["No data returned from upsert operation"]
-                }
+            for record in records:
+                try:
+                    # Try to insert first
+                    result = self.client.table(self.table_name).insert(record).execute()
+                    if result.data:
+                        loaded_count += 1
+                except Exception as e:
+                    error_str = str(e)
+                    if 'duplicate key value violates unique constraint' in error_str:
+                        # Record exists, try to update it
+                        try:
+                            update_result = self.client.table(self.table_name).update(record).eq('source', record['source']).eq('source_id', record['source_id']).execute()
+                            if update_result.data:
+                                loaded_count += 1
+                            else:
+                                failed_count += 1
+                                errors.append(f"Update failed for {record['source']}:{record['source_id']}")
+                        except Exception as update_e:
+                            failed_count += 1
+                            errors.append(f"Update error for {record['source']}:{record['source_id']}: {update_e}")
+                    else:
+                        failed_count += 1
+                        errors.append(f"Insert error for {record['source']}:{record['source_id']}: {e}")
+            
+            return {
+                "loaded_count": loaded_count,
+                "failed_count": failed_count,
+                "errors": errors
+            }
         
         except Exception as e:
             error_msg = f"Batch load failed: {e}"
