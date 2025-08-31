@@ -30,7 +30,7 @@
 - **Sortie principale**: Supabase Postgres (tables: offers, snapshots, raw_offers)
 - **Interface utilisateur**: Next.js dashboard avec agrégations via Supabase
 
-## 2. Schéma technique - Architecture Option C
+## 2. Schéma technique - Architecture
 
 ### Cloud (Supabase)
 ```

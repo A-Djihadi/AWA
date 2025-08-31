@@ -4,7 +4,7 @@ Un tracker de taux journaliers moyens (TJM) pour développeurs freelance avec ar
 
 ## 🏗️ Architecture
 
-### Option C: Supabase + VPS Docker
+### Supabase + VPS Docker
 
 - **Frontend**: Next.js (Vercel/VPS) avec Supabase client
 - **Backend**: Microservices Docker sur VPS
@@ -95,5 +95,5 @@ docker run --rm awa-scraper python -m scrapy crawl freelance_tjm
 
 ---
 
-**Maintainers**: [@votre-username]  
+**Maintainers**: [@A-Djihadi] mail : djihadi.ahamdy@gmail.com  
 **License**: MIT
