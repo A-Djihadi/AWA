@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Scraper Service - Scrapy/Playwright pour extraction
+  scraper:
+    build: 
+      context: ./services/scraper
+      dockerfile: Dockerfile
+    container_name: awa-scraper
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - ./data/raw:/app/data/raw
+      - ./logs:/app/logs
+    networks:
+      - awa-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+
+  # ETL Service - Normalisation et insertion
+  etl:
+    build:
+      context: ./services/etl
+      dockerfile: Dockerfile
+    container_name: awa-etl
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - PYTHONPATH=/app
+    volumes:
+      - ./data/raw:/app/data/raw
+      - ./data/processed:/app/data/processed
+      - ./logs:/app/logs
+    depends_on:
+      - scraper
+    networks:
+      - awa-network
+    restart: unless-stopped
+
+  # Scheduler Service - Cron jobs
+  scheduler:
+    build:
+      context: ./services/scheduler
+      dockerfile: Dockerfile
+    container_name: awa-scheduler
+    environment:
+      - SCRAPER_SERVICE_URL=http://scraper:8000
+      - ETL_SERVICE_URL=http://etl:8001
+    volumes:
+      - ./logs:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - scraper
+      - etl
+    networks:
+      - awa-network
+    restart: unless-stopped
+
+  # Monitoring & Health Checks
+  monitoring:
+    image: prom/node-exporter:latest
+    container_name: awa-monitoring
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    networks:
+      - awa-network
+    restart: unless-stopped
+
+  # Frontend (optionnel, si hébergé sur VPS)
+  frontend:
+    build:
+      context: ./services/frontend
+      dockerfile: Dockerfile
+    container_name: awa-frontend
+    environment:
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+    ports:
+      - "3000:3000"
+    networks:
+      - awa-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+networks:
+  awa-network:
+    driver: bridge
+
+volumes:
+  raw_data:
+  processed_data:
+  logs:
