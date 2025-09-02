@@ -24,15 +24,30 @@ class Paths:
 
 
 class SpiderNames(Enum):
-    """Available spider names"""
+    """Available spider names - Production ready"""
     FREEWORK = "freework"
-    MALT = "malt"
-    COMET = "comet"
+    COLLECTIVE_WORK = "collective_work"
     
     @classmethod
     def get_valid_spiders(cls) -> List[str]:
         """Get list of valid spider names"""
         return [spider.value for spider in cls]
+    
+    @classmethod
+    def get_priority_spiders(cls) -> List[str]:
+        """Get high-priority spiders for production"""
+        return [
+            cls.FREEWORK.value,
+            cls.COLLECTIVE_WORK.value
+        ]
+    
+    @classmethod
+    def get_french_spiders(cls) -> List[str]:
+        """Get French-focused spiders"""
+        return [
+            cls.FREEWORK.value,
+            cls.COLLECTIVE_WORK.value
+        ]
 
 
 class FilePatterns:
