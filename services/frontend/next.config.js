@@ -17,10 +17,6 @@ const nextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
-  // Environment variables for build
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
   async headers() {
     return [
       {
