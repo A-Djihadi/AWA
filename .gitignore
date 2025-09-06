@@ -123,3 +123,19 @@ coverage.xml
 *.tar.gz
 *.zip
 *.rar
+
+# Debug and temporary files
+*DEBUG*.md
+*RAPPORT*.md
+*TEST*.md
+*_debug*
+*_test*
+*.tmp
+temp/
+tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo

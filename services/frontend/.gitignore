@@ -28,3 +28,18 @@ next-env.d.ts
 # Testing
 coverage/
 .nyc_output
+
+# Debug files
+*DEBUG*.md
+*RAPPORT*.md
+*TEST*.md
+*.log
+*.tmp
+temp/
+tmp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

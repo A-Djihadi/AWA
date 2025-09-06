@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export default function RootLayout({
   children,
 }: {
@@ -6,36 +8,31 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <title>AWA - TJM Analytics</title>
-        <meta name="description" content="Analytics platform for freelance daily rates" />
+        <title>TJM Analytics - Freelance IT</title>
+        <meta name="description" content="Analysez les taux journaliers moyens et trouvez les meilleures missions freelance IT en France" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className="bg-gray-50 min-h-screen">
-        <nav className="bg-white shadow-sm border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
-              <div className="flex items-center">
-                <h1 className="text-xl font-bold text-gray-900">AWA</h1>
-                <span className="ml-2 text-sm text-gray-500">TJM Analytics</span>
-              </div>
-              <div className="flex space-x-4">
-                <a href="/" className="text-gray-700 hover:text-gray-900 px-3 py-2">
-                  Dashboard
-                </a>
-                <a href="/offers" className="text-gray-700 hover:text-gray-900 px-3 py-2">
-                  Offers
-                </a>
-                <a href="/stats" className="text-gray-700 hover:text-gray-900 px-3 py-2">
-                  Statistics
-                </a>
-              </div>
+        <nav className="bg-white shadow-lg">
+          <div className="container mx-auto px-4">
+            <div className="flex justify-center items-center py-4">
+              <Link href="/" className="text-2xl font-bold text-blue-600">
+                TJM Analytics
+              </Link>
             </div>
           </div>
         </nav>
-        <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        
+        <main className="min-h-screen bg-gray-50">
           {children}
         </main>
+        
+        <footer className="bg-gray-800 text-white py-8">
+          <div className="container mx-auto px-4 text-center">
+            <p>&copy; 2024 TJM Analytics. Analyse des missions freelance IT en France.</p>
+          </div>
+        </footer>
       </body>
     </html>
   )
