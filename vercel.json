@@ -1,0 +1,24 @@
+{
+  "buildCommand": "cd services/frontend && npm run build",
+  "outputDirectory": "services/frontend/.next",
+  "installCommand": "cd services/frontend && npm install",
+  "devCommand": "cd services/frontend && npm run dev",
+  "framework": "nextjs",
+  "functions": {
+    "services/frontend/pages/api/**/*.js": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY": "@supabase_anon_key"
+    }
+  }
+}

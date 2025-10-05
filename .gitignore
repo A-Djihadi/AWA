@@ -68,7 +68,6 @@ htmlcov/
 # Scrapy
 .scrapy/
 *.jsonl
-*.json
 scraped_data/
 
 # Data files
