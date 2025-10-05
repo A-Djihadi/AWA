@@ -7,15 +7,17 @@ import scrapy
 import re
 from datetime import datetime
 from tjm_scraper.items import TjmOfferItem
+from tjm_scraper.location_validator import normalize_location, is_valid_french_location
 
 
 class CollectiveWorkSpider(scrapy.Spider):
     name = "collective_work"
     allowed_domains = ["collective.work"]
+    
+    # Scraper 15 pages de Collective.work
     start_urls = [
-        "https://www.collective.work/job",
-        "https://www.collective.work/job?page=2",
-        "https://www.collective.work/job?page=3",
+        f"https://www.collective.work/job?page={i}"
+        for i in range(1, 16)
     ]
     
     custom_settings = {
@@ -54,7 +56,14 @@ class CollectiveWorkSpider(scrapy.Spider):
             
             title = self.extract_text(job_element, ["h2", "h3"]) or "N/A"
             company = self.extract_text(job_element, [".company"]) or "N/A"
-            location = self.extract_text(job_element, [".location"]) or "Remote"
+            raw_location = self.extract_text(job_element, [".location"]) or "Remote"
+            
+            # Valider et normaliser la localisation
+            location = normalize_location(raw_location)
+            if not location:
+                self.logger.warning(f"⚠️  Localisation rejetée: {raw_location}")
+                location = "Remote"  # Fallback par défaut
+            
             job_url = job_element.css("a::attr(href)").get()
             
             if job_url:

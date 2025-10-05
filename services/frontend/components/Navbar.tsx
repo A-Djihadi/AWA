@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const navigation = [
-  { name: 'Home', href: '/', current: true },
-  { name: 'About', href: '/about', current: false },
-  { name: 'Services', href: '/services', current: false },
+  { name: 'Accueil', href: '/', current: true },
+  { name: 'Recherche', href: '/#search', current: false },
   { name: 'Contact', href: '/contact', current: false },
 ]
 
@@ -50,7 +49,7 @@ export default function Navbar() {
                 <img
                   alt="AWA Logo"
                   src="/icon.svg"
-                  className="h-8 w-auto"
+                  className="h-10 w-auto"
                 />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">
                   Another Weather App
@@ -60,7 +59,7 @@ export default function Navbar() {
             
             {/* Desktop navigation */}
             <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
+              <div className="absolute right-0 flex space-x-4">
                 {navigation.map((item) => (
                   <Link
                     key={item.name}

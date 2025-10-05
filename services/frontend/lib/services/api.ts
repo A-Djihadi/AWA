@@ -1,39 +1,47 @@
-import { SearchFormData, SearchResponse, LocationStatsResponse } from '../types'
+import { JobOffer, SearchFilters, LocationData } from '../types'
 
-class ApiService {
-  private baseUrl: string
+const API_BASE_URL = '/api'
 
-  constructor() {
-    this.baseUrl = '/api'
-  }
-
-  private async handleResponse<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-      throw new Error(`API Error: ${response.status} ${response.statusText}`)
+export const apiService = {
+  async searchOffers(filters: SearchFilters): Promise<JobOffer[]> {
+    const params = new URLSearchParams()
+    
+    if (filters.technologies) {
+      params.append('tech', filters.technologies)
     }
+    
+    if (filters.location) {
+      params.append('location', filters.location)
+    }
+    
+    const url = `${API_BASE_URL}/offers${params.toString() ? `?${params.toString()}` : ''}`
+    
+    const response = await fetch(url)
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`)
+    }
+    
+    return response.json()
+  },
+
+  async getStats() {
+    const response = await fetch(`${API_BASE_URL}/stats`)
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`)
+    }
+    
+    return response.json()
+  },
+
+  async getLocationStats(): Promise<{ locations: LocationData[], summary: { totalMissions: number, averageTjm: number, topCities: string[] } }> {
+    const response = await fetch(`${API_BASE_URL}/location-stats`)
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`)
+    }
+    
     return response.json()
   }
-
-  async searchMissions(searchData: SearchFormData): Promise<SearchResponse> {
-    const params = new URLSearchParams({
-      position: searchData.position,
-      location: searchData.location
-    })
-
-    const response = await fetch(`${this.baseUrl}/offers?${params}`)
-    return this.handleResponse<SearchResponse>(response)
-  }
-
-  async getLocationStats(): Promise<LocationStatsResponse> {
-    const response = await fetch(`${this.baseUrl}/stats/locations`)
-    return this.handleResponse<LocationStatsResponse>(response)
-  }
-
-  async getTjmEvolution(position: string, location: string): Promise<any> {
-    const params = new URLSearchParams({ position, location })
-    const response = await fetch(`${this.baseUrl}/stats/tjm-evolution?${params}`)
-    return this.handleResponse(response)
-  }
 }
-
-export const apiService = new ApiService()

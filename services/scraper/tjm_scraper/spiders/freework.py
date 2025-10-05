@@ -10,6 +10,7 @@ import json
 from datetime import datetime
 from urllib.parse import urljoin
 from tjm_scraper.items import TjmOfferItem
+from tjm_scraper.location_validator import normalize_location, is_valid_french_location
 
 
 class FreeWorkSpider(scrapy.Spider):
@@ -21,12 +22,16 @@ class FreeWorkSpider(scrapy.Spider):
     - TJM rate parsing with multiple formats
     - Comprehensive job data extraction
     - Proper error handling and logging
+    - Multi-page scraping (15 pages)
     """
     
     name = 'freework'
     allowed_domains = ['free-work.com']
+    
+    # Scraper 15 pages de FreeWork
     start_urls = [
-        'https://www.free-work.com/fr/tech-it/jobs?locations=fr~~~&contracts=contractor'
+        f'https://www.free-work.com/fr/tech-it/jobs?page={i}&locations=fr~~~&contracts=contractor'
+        for i in range(1, 16)
     ]
     
     custom_settings = {
@@ -476,19 +481,19 @@ class FreeWorkSpider(scrapy.Spider):
         return None
     
     def clean_location(self, location):
-        """Nettoyer la localisation extraite"""
+        """Nettoyer et valider la localisation extraite avec villes françaises"""
         if not location:
             return None
         
-        # Supprimer les mots parasites
-        noise_words = ['du', 'd', 'le', 'la', 'les', 'de', 'des', 'et', 'ou', 'à', 'en', 'sur']
-        words = location.split()
-        clean_words = [word for word in words if word.lower() not in noise_words or len(word) > 2]
+        # Utiliser le validateur de localisations
+        normalized = normalize_location(location)
         
-        if clean_words:
-            return ' '.join(clean_words).title()
-        
-        return location.title()
+        if normalized:
+            self.logger.info(f"✅ Localisation validée: {location} → {normalized}")
+            return normalized
+        else:
+            self.logger.warning(f"⚠️  Localisation rejetée (non française): {location}")
+            return None
     
     def extract_seniority(self, response):
         """Extraire le niveau de séniorité"""

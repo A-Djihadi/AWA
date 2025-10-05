@@ -26,7 +26,7 @@ export interface TjmDataPoint {
 }
 
 export interface SearchFormData {
-  position: string
+  technologies: string
   location: string
 }
 
@@ -43,4 +43,26 @@ export interface LocationStatsResponse {
     averageTjm: number
     topCities: string[]
   }
+}
+
+export interface JobOffer {
+  id: string
+  source: string
+  source_id: string
+  title: string
+  company?: string
+  tjm_min?: number
+  tjm_max?: number
+  technologies: string[]
+  seniority_level?: string
+  location?: string
+  remote_policy?: string
+  contract_type?: string
+  description?: string
+  scraped_at: string
+}
+
+export interface SearchFilters {
+  technologies?: string
+  location?: string
 }

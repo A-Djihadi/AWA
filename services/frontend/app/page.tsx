@@ -3,6 +3,7 @@
 import { HeroSection } from "@/components/home/HeroSection"
 import { LocationStatsSection } from "@/components/home/LocationStatsSection"
 import { SearchBar } from "@/components/home/SearchBar"
+import { SearchSuggestions } from "@/components/home/SearchSuggestions"
 import { SearchResults } from "@/components/home/SearchResults"
 import { useSearch, useLocationStats } from "@/lib/hooks"
 
@@ -21,6 +22,14 @@ export default function HomePage() {
     error: locationError 
   } = useLocationStats()
 
+  // Handler pour les suggestions de recherche
+  const handleSuggestionClick = (tech?: string, location?: string) => {
+    handleSearch({
+      technologies: tech || '',
+      location: location || ''
+    })
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Section Hero */}
@@ -37,13 +46,14 @@ export default function HomePage() {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <SearchBar onSearch={handleSearch} />
+            <SearchBar onSearch={handleSearch} isLoading={searchLoading} />
+            <SearchSuggestions onSuggestionClick={handleSuggestionClick} />
           </div>
         </div>
       </section>
       
       {/* Section Résultats avec graphique évolution TJM + cartes missions */}
-      {(searchParams?.position || searchParams?.location) && (
+      {(searchParams?.technologies || searchParams?.location) && (
         <SearchResults 
           results={results}
           loading={searchLoading}
