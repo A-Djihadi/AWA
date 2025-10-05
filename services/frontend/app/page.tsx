@@ -37,9 +37,6 @@ export default function HomePage() {
       <section className="py-12 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-8 text-gray-900">
-              Rechercher des missions
-            </h2>
             <SearchBar onSearch={handleSearch} />
           </div>
         </div>
