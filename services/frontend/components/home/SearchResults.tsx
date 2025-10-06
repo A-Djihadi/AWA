@@ -223,6 +223,11 @@ export const SearchResults = ({
                 </span>
               )}
             </div>
+            {results.length > 0 && (
+              <p className="text-sm text-gray-600 mt-3">
+              Affichage des {results.length} résultat{results.length > 1 ? 's' : ''} les plus récent{results.length > 1 ? 's' : ''} (limité à 15 max)
+              </p>
+            )}
           </div>
           
           {/* Grille de missions */}

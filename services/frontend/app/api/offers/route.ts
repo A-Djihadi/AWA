@@ -10,13 +10,14 @@ export async function GET(request: NextRequest) {
     const tech = searchParams.get('tech')
     const location = searchParams.get('location')
     
-    console.log('🔍 Recherche:', { tech, location })
+    console.debug('🔍 Recherche:', { tech, location })
     
     // Construction de la requête Supabase
     let query = supabase
       .from('offers')
       .select('*')
       .order('scraped_at', { ascending: false })
+      .limit(15)  // Limite aux 15 résultats les plus récents
     
     // Filtre par technologie si présent
     // Utilise contains pour rechercher une technologie spécifique dans le tableau
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
       )
     }
     
-    console.log(`✅ ${data?.length || 0} offres trouvées`)
+    console.debug(`✅ ${data?.length || 0} offres trouvées`)
     
     return NextResponse.json(data || [])
   } catch (error) {

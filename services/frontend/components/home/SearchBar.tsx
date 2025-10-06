@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { SearchFormData } from '@/lib/types'
+import { useAnalytics } from '@/components/Analytics'
 
 interface SearchBarProps {
   onSearch: (formData: SearchFormData) => void
@@ -9,6 +10,7 @@ interface SearchBarProps {
 }
 
 export const SearchBar = ({ onSearch, isLoading = false }: SearchBarProps) => {
+  const { trackEvent } = useAnalytics()
   const [formData, setFormData] = useState<SearchFormData>({
     technologies: '',
     location: ''
@@ -16,6 +18,15 @@ export const SearchBar = ({ onSearch, isLoading = false }: SearchBarProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Tracker l'événement de recherche
+    trackEvent('search', {
+      search_term: formData.technologies || 'any',
+      location: formData.location || 'any',
+      has_tech: !!formData.technologies,
+      has_location: !!formData.location
+    })
+    
     onSearch(formData)
   }
 
